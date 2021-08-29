@@ -1,20 +1,122 @@
+
+<h1 align="center">
+  Restricted Files Action 🚀
+</h1>
+
 <p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
+  <a href="https://github.com/fmonniot/actions-restricted-paths/actions">
+    <img src="https://github.com/fmonniot/actions-restricted-paths/workflows/unit-tests/badge.svg" alt="Unit test status badge">
+  </a>
+  
+  <a href="https://github.com/fmonniot/actions-restricted-paths/actions">
+    <img src="https://github.com/fmonniot/actions-restricted-paths/workflows/integration-tests/badge.svg" alt="Integration test status badge">
+  </a>
+  
+  <!--
+  <a href="https://codecov.io/gh/fmonniot/actions-restricted-paths/branch/dev">
+    <img src="https://codecov.io/gh/fmonniot/actions-restricted-paths/branch/dev/graph/badge.svg" alt="Code coverage status badge">
+  </a>
+
+  <a href="https://github.com/fmonniot/actions-restricted-paths/releases">
+    <img src="https://img.shields.io/github/v/release/fmonniot/actions-restricted-paths.svg?logo=github" alt="Release version badge">
+  </a>
+  
+  <a href="https://github.com/marketplace/actions/deploy-to-github-pages">
+    <img src="https://img.shields.io/badge/action-marketplace-blue.svg?logo=github&color=orange" alt="Github marketplace badge">
+  </a>
+  -->
 </p>
 
-# Create a JavaScript Action using TypeScript
+<p align="center">
+  This <a href="https://github.com/features/actions">GitHub Action</a> will check if the person triggering a job is authorized to execute it based on the file being modified.
+</p>
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
 
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
+## Getting Started :airplane:
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+TODO: Change wording: the `only_people_` flag will refer to the user who is responsible for triggering the workflow (the actor in GH Actions terminology).
+If that user is including changes from other people, this actions will not know
+about it. Code Reviews helps mitigate this issue.
 
-## Create an action from this template
+```yaml
+jobs:
+  job_name:
+    steps:
+      - uses: fmonniot/actions-deny-execution@v1
+        with:
+            # Fail execution if someone not mentionned modified a file
+            # within the path.
+            # For PR: will look at the entire branch diff
+            # For tag: will look at the diff with the previous tag
+            # For commit: will look at the commit only.
+            # The laste one means that someone with write access to a branch
+            # can change one the file within `path` in a unit (PR/tag/commit)
+            # and then create a second unit outside of `path` to use the
+            # previous modification. Grants permission carefully.
+          restricted_path: .github
+          only_people: |
+           fmonniot
+           someone
+      # If you need to restrict additional paths, you'll have to use multiple
+      # steps. GitHub Actions does not support arrays in its inputs.
+      # TODO Multiline restricted_paths ?
+      - uses: fmonniot/actions-deny-execution@v1
+        with:
+          restricted_path: dist
+          only_people: fmonniot
+```
 
-Click the `Use this Template` and provide the new repo details for your action
+TODO Investigate alternate syntax and features:
+```yml
+jobs:
+  job_name:
+    steps:
+      - uses: fmonniot/actions-deny-execution@v1
+        with:
+          codeowners: .github/codeowners.md
+          # warn if path/people is also defined, saying owners have priority
+      - uses: fmonniot/actions-deny-execution@v1
+        with:
+          restricted_path: .github
+          only_people: |
+           fmonniot
+           someone
+```
+
+
+GitHub related features: https://docs.github.com/en/actions/reference/environments
+On GHE 3.1, env can be protected by reviewer and wait time. On github.com, branches can also be used to restrict execution.
+
+## Configuration 📁
+
+TODO table with options and explanation
+TODO Gotcha with commit access
+
+TODO Do I need to keep the required/optional sections below ?
+
+#### Required Setup
+
+TODO
+
+#### Optional Choices
+
+
+TODO
+
+## Contributing ✏️
+
+See the [contribution guide](./CONTRIBUTING.md).
+
+---
+
+TODO Below is what remains of the typescript getting started guide. Will be removed as development continue.
+
+
+
 
 ## Code in Main
+
+TODO Move this stuff into `CONTRIBUTING.md`
 
 > First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
 
@@ -39,36 +141,6 @@ $ npm test
 
 ...
 ```
-
-## Change action.yml
-
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
 
 ## Publish to a distribution branch
 
