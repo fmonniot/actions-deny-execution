@@ -1,11 +1,10 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Restricted Paths'
+description: 'Offer a simple way to fail jobs when files in some path are modified'
+author: 'fmonniot'
 inputs:
-  milliseconds: # change this
+  restricted_paths:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Array of restricted paths along with the restriction'
 runs:
   using: 'node12'
   main: 'dist/index.js'
