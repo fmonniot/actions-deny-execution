@@ -34,7 +34,9 @@ async function run(): Promise<void> {
 
     core.setOutput('time', new Date().toTimeString())
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) {
+      core.setFailed(error.message)
+    }
     status = Status.FAILED
   } finally {
     core.info(
